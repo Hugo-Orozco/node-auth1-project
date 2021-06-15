@@ -15,10 +15,28 @@ const cors = require("cors");
   or you can use a session store like `connect-session-knex`.
  */
 
+const session = require('express-session');
+
+const usersRouter = require('./users/users-router');
+const authRouter = require('./auth/auth-router');
+
 const server = express();
 
+server.use(session({
+  name: 'chocolatechip',
+  secret: 'secret key',
+  cookie: {
+    maxAge: 1000 * 60,
+    secure: false,
+    httpOnly: false
+  },
+  resave: false,
+  saveUninitialized: false
+}));
 server.use(helmet());
 server.use(express.json());
+server.use('/api/users', usersRouter);
+server.use('/api/auth', authRouter);
 server.use(cors());
 
 server.get("/", (req, res) => {
